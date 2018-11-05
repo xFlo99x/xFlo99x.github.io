@@ -1,0 +1,218 @@
+<html>
+
+<head>
+    <title>Math Program</title>
+    <meta charset="utf-8">
+    <link href="../assets/css/all.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    
+</head>
+
+<body>
+    <h1>Terminal Programm</h1>
+    <div id="div1"><input id="input" type="text" autofocus="autofocus" onkeypress="checkEnterClick(event)"></div>
+
+    <script>
+        //Reset input field at start
+        document.getElementById("input").value = "";
+
+        //Initiate variables at startup
+        var input_number = 1;
+        var output_number = 1;
+        var decimal_places = 2;
+
+        program_description = {
+            decimal: "Specify the number of decimal places shown in the result",
+            factor: "Returns the factorial of x",
+            lcm: "Returns the least common multiply of two numbers a and b",
+            lineq: "Solves linear equations like: ax+b=0",
+            lineseg: "Given 2 points (ax,ay)(bx,by) calculates the linear function y=kx+d",
+            quadeq: "Solves quadratic equations like: ax<sup>2</sup>+bx+c=0",
+            sqrt: "Gives back the square root of a number"
+        }
+        var program_call = ["decimal", "lineq", "lineseg","quadeq"];
+
+        function checkEnterClick(e) {
+            if (e.keyCode == 13 && !document.getElementById("input").value == "") {
+                var user_input = getUserInput();
+
+                if (user_input == "help()") {
+                    updateInputField();
+                    showAllFunctions();
+                    resetInput();
+                } else if (user_input == "reload()") {
+                    location.reload(true);
+                } else if (user_input.includes("(") && user_input.includes(")")) {
+                    var index = user_input.indexOf("(");
+                    var nameOfFunction = user_input.slice(0, index);
+                    var inputContent = user_input.slice(index + 1, -1);
+                    if (program_call.indexOf(nameOfFunction) != -1) {
+                        if (user_input.includes("()")) {
+                            updateInputField();
+                            var functionDescription = program_description[nameOfFunction];
+                            document.getElementById("output").innerHTML = functionDescription;
+                            resetInput();
+                        } else {
+                            updateInputField();
+                            window[nameOfFunction](inputContent);
+                            resetInput();
+                        }
+                    } else {
+                        updateInputField();
+                        document.getElementById("output").innerHTML = "<div class='warning'>Function not found or spelled the wrong way</div>";
+                        resetInput();
+                    }
+
+                } else {
+                    updateInputField();
+                    document.getElementById("output").innerHTML = "Search results opened on new Tab on DuckDuckGo";
+                    var address = "https://duckduckgo.com/?q=" + user_input + "&t=ffab&ia=web"
+                    window.open(address, '_blank');
+                    resetInput();
+                }
+
+            }
+        }
+
+        function showAllFunctions() {
+            document.getElementById("output").innerHTML = "<table id='table1'></table>";
+
+            var table = document.getElementById("table1");
+            var rowNumber = 0;
+            for (var key in program_description) {
+                var row = table.insertRow(rowNumber);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                cell1.setAttribute("class", "helpLeft");
+                cell2.setAttribute("class", "helpRight");
+                cell1.innerHTML = key;
+                cell2.innerHTML = program_description[key];
+                rowNumber += 1;
+            }
+            document.getElementById("table1").setAttribute("id", "table");
+
+        }
+
+        function resetInput() {
+            document.getElementById("output").setAttribute("id", "output2");
+            //Scroll Input field into View and focus cursor on it
+            document.getElementById("input").focus();
+            document.getElementById("input").scrollIntoView();
+        }
+
+        function updateInputField() {
+            var user_input = getUserInput();
+
+            //Remove input field
+            var parent = document.getElementById("div1");
+            var child = document.getElementById("input");
+            parent.removeChild(child);
+
+            //Create new div Element with the user_input typed in instead of input
+            var new_div = document.createElement("div");
+            var new_text = document.createTextNode(user_input);
+            new_div.appendChild(new_text);
+
+            var element = document.getElementById("div1");
+            element.appendChild(new_div);
+            new_div.setAttribute("id", "cinput");
+
+            //Create output field in which the processed content is later placed
+            var new_output_div = document.createElement("div");
+            var element = document.getElementById("div1");
+            element.appendChild(new_output_div);
+            new_output_div.setAttribute("id", "output");
+
+            //Create new input field inside div1
+            var new_input = document.createElement("input");
+            var element = document.getElementById("div1");
+            element.appendChild(new_input);
+            new_input.setAttribute("id", "input");
+            new_input.setAttribute("type", "text");
+            new_input.setAttribute("onkeypress", "checkEnterClick(event)");
+        }
+
+        function getUserInput() {
+            var raw_user_input = document.getElementById("input").value;
+            var user_input = raw_user_input.toLowerCase().replace(" ", "");
+            return user_input;
+        }
+
+        function lineseg(points) {
+            //Replace numbers and -. to check if input is formatted correctly -> (ax,ay)(bx,by)
+            var checkString = points.replace(/[0-9]/g, "").replace(/-/g, "").replace(/\./g, "");
+            if (checkString == ",)(,") {
+                //Extract numbers from the input named points
+                var pointA = points.slice(0, points.indexOf(")("));
+                var pointB = points.slice((points.indexOf(")(") + 2));
+                var ax = Number(pointA.slice(0, pointA.indexOf(",")));
+                var bx = Number(pointB.slice(0, pointB.indexOf(",")));
+                var ay = Number(pointA.slice(pointA.indexOf(",") + 1));
+                var by = Number(pointB.slice(pointB.indexOf(",") + 1));
+                //Calculate Δx, Δy, the corresponding slope and the y-intercept
+                var Δx = ax - bx;
+                var Δy = ay - by;
+                var slope = Δy / Δx;
+                var y_intercept = ay - (slope * ax);
+                var x_intercept = -y_intercept / slope;
+                //For formatting reasons define sign and y_intercept 2 and check if number has negative sign
+                var y_intercept2 = y_intercept;
+                var sign = "+ ";
+                if (y_intercept >= 0) {
+                    sign = "+ ";
+                } else {
+                    var y_intercept2 = y_intercept2 * -1;
+                    sign = "– ";
+                }
+
+                //Create the equation output and round all output numbers to the specified number of decimal places
+                var equation = "Function: &nbsp; &nbsp; &nbsp; f(x) = <b>" + slope.toFixed(decimal_places) + "x " + sign + y_intercept2.toFixed(decimal_places) + "</b>";
+                var equation_x_0 = "X-Intercept: &nbsp; f(x) = 0 = <b>" + x_intercept.toFixed(decimal_places) + "</b>";
+                var equation_y_0 = "Y-Intercept: &nbsp; f(0) = d = <b>" + y_intercept.toFixed(decimal_places) + "</b>";
+                document.getElementById("output").innerHTML = equation + "<br>" + equation_x_0 + "<br>" + equation_y_0;
+            } else {
+                document.getElementById("output").innerHTML = "<div class='warning'>Please input numbers in the form <b>lineseg((ax,ay)(bx,by))</b>";
+            }
+        }
+
+        function decimal(places) {
+            var checkString = places.replace(/[0-9]/g, "");
+            if (checkString == "") {
+                decimal_places = places;
+                document.getElementById("output").innerHTML = "Showing " + places + " decimal places from now on.";
+            } else {
+                document.getElementById("output").innerHTML = "<div class='warning'>Only integers are accepted as input</div>";
+            }
+        }
+
+        function lineq(points) {
+            var checkString = points.replace(/[0-9]/g, "").replace(/-/g, "").replace(/\./g, "");
+            if (checkString == ",") {
+                var a = Number(points.slice(0, points.indexOf(",")));
+                var b = Number(points.slice(points.indexOf(",") + 1));
+                var equation = -b / a;
+                document.getElementById("output").innerHTML = "x = " + equation.toFixed(decimal_places);
+            } else {
+                document.getElementById("output").innerHTML = "<div class='warning'>Please input numbers in the form <b>lineq(a,b)";
+            }
+        }
+
+        function quadeq(points) {
+            var checkString = points.replace(/[0-9]/g, "").replace(/-/g, "").replace(/\./g, "");
+            if (checkString == ",,") {
+                var number_1 = Number(points.slice(0,points.indexOf(",")));
+                console.log(number_1);
+                var points2 = points.slice(points.indexOf(",")+1,);
+                var number_2 = Number(points2.slice(0,points2.indexOf(",")));
+                var number_3 = Number(points2.slice(points2.indexOf(",")+1));
+                console.log(number_2);
+                console.log(number_3);
+            } else {
+                document.getElementById("output").innerHTML = "<div class='warning'>Please input numbers in the form <b>quadeq(a,b,c)</b>";
+            }
+        }
+
+    </script>
+</body>
+
+</html>
