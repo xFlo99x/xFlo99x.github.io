@@ -6,7 +6,8 @@
     <link href="../assets/css/all.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-    
+    <script src="/assets/js/math.js"></script>
+
 </head>
 
 <body>
@@ -24,6 +25,7 @@
 
         program_description = {
             decimal: "Specify the number of decimal places shown in the result",
+            eval: "Evaluates simple expressions",
             factor: "Returns the factorial of x",
             lcm: "Returns the least common multiply of two numbers a and b",
             lineq: "Solves linear equations like: ax+b=0",
@@ -31,7 +33,7 @@
             quadeq: "Solves quadratic equations like: ax<sup>2</sup>+bx+c=0",
             sqrt: "Gives back the square root of a number"
         }
-        var program_call = ["decimal", "lineq", "lineseg","quadeq"];
+        var program_call = ["decimal", "eval", "lineq", "lineseg", "quadeq"];
 
         function checkEnterClick(e) {
             if (e.keyCode == 13 && !document.getElementById("input").value == "") {
@@ -201,16 +203,22 @@
         function quadeq(points) {
             var checkString = points.replace(/[0-9]/g, "").replace(/-/g, "").replace(/\./g, "");
             if (checkString == ",,") {
-                var number_1 = Number(points.slice(0,points.indexOf(",")));
+                var number_1 = Number(points.slice(0, points.indexOf(",")));
                 console.log(number_1);
-                var points2 = points.slice(points.indexOf(",")+1,);
-                var number_2 = Number(points2.slice(0,points2.indexOf(",")));
-                var number_3 = Number(points2.slice(points2.indexOf(",")+1));
+                var points2 = points.slice(points.indexOf(",") + 1, );
+                var number_2 = Number(points2.slice(0, points2.indexOf(",")));
+                var number_3 = Number(points2.slice(points2.indexOf(",") + 1));
                 console.log(number_2);
                 console.log(number_3);
             } else {
                 document.getElementById("output").innerHTML = "<div class='warning'>Please input numbers in the form <b>quadeq(a,b,c)</b>";
             }
+        }
+
+        function eval(input) {
+            var output = math.eval(input);
+            console.log(output);
+            document.getElementById("output").innerHTML = output;
         }
 
     </script>
