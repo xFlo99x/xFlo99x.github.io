@@ -6,7 +6,6 @@
     <link href="../assets/css/all.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-    <script src="/assets/js/math.js"></script>
 
 </head>
 
@@ -25,7 +24,6 @@
 
         program_description = {
             decimal: "Specify the number of decimal places shown in the result",
-            eval: "Evaluates simple expressions",
             factor: "Returns the factorial of x",
             lcm: "Returns the least common multiply of two numbers a and b",
             lineq: "Solves linear equations like: ax+b=0",
@@ -33,7 +31,7 @@
             quadeq: "Solves quadratic equations like: ax<sup>2</sup>+bx+c=0",
             sqrt: "Gives back the square root of a number"
         }
-        var program_call = ["decimal", "eval", "lineq", "lineseg", "quadeq"];
+        var program_call = ["decimal", "factor", "lcm", "lineq", "lineseg", "quadeq"];
 
         function checkEnterClick(e) {
             if (e.keyCode == 13 && !document.getElementById("input").value == "") {
@@ -188,6 +186,48 @@
             }
         }
 
+        function factor(number) {
+            var checkString = number.replace(/[0-9]/g, "")
+            if (checkString == "") {
+                var start_number = 1
+                for (i = 1; i <= number; i++) {
+                    var start_number = start_number * i;
+                }
+                document.getElementById("output").innerHTML = start_number;
+            } else {
+                document.getElementById("output").innerHTML = "<div class='warning'>Only positive whole numbers are accepted for factor()</div>";
+            }
+
+        }
+
+        function lcm(number) {
+            var checkString = number.replace(/[0-9]/g, "").replace(/-/g, "")
+            if (checkString == ",") {
+                var positive_number = number.replace(/-/g, "");
+                var number_1 = Number(positive_number.slice(0, positive_number.indexOf(",")));
+                var number_2 = Number(positive_number.slice(positive_number.indexOf(",") + 1));
+                if (number_1 <= number_2) {
+                    var number_found = true;
+                    var multiplicator = 1;
+                    while (number_found == true) {
+                        var checkNumber = number_1 * multiplicator;
+                        var remainder = checkNumber % number_2;
+                        if (remainder == 0) {
+                            document.getElementById("output").innerHTML = "lcm = " + checkNumber;
+                            multiplicator = 1;
+                            number_found = false;
+                        } else {
+                            multiplicator += 1;
+                        }
+                    }
+                } else {
+                    console.log("hello");
+                }
+            } else {
+                document.getElementById("output").innerHTML = "<div class='warning'>Only input of kind lcm(±a,±b) is accepted</div>";
+            }
+        }
+
         function lineq(points) {
             var checkString = points.replace(/[0-9]/g, "").replace(/-/g, "").replace(/\./g, "");
             if (checkString == ",") {
@@ -196,7 +236,7 @@
                 var equation = -b / a;
                 document.getElementById("output").innerHTML = "x = " + equation.toFixed(decimal_places);
             } else {
-                document.getElementById("output").innerHTML = "<div class='warning'>Please input numbers in the form <b>lineq(a,b)";
+                document.getElementById("output").innerHTML = "<div class='warning'>Please input numbers in the form <b>lineq(a,b)</div>";
             }
         }
 
@@ -211,14 +251,8 @@
                 console.log(number_2);
                 console.log(number_3);
             } else {
-                document.getElementById("output").innerHTML = "<div class='warning'>Please input numbers in the form <b>quadeq(a,b,c)</b>";
+                document.getElementById("output").innerHTML = "<div class='warning'>Please input numbers in the form <b>quadeq(a,b,c)</b></div>";
             }
-        }
-
-        function eval(input) {
-            var output = math.eval(input);
-            console.log(output);
-            document.getElementById("output").innerHTML = output;
         }
 
     </script>
